@@ -40,7 +40,7 @@ cd rxdecode-next
 
 ```bash
 VITE_API_URL=http://localhost:5000
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/rxdecode_db
+DATABASE_URL=postgresql://postgres:password@localhost:5432/db_name
 ```
 
 - `server/.env` (backend runtime):
@@ -48,7 +48,7 @@ DATABASE_URL=postgresql://postgres:postgres@localhost:5432/rxdecode_db
 ```bash
 PORT=5000
 CLIENT_ORIGIN=http://localhost:5173
-DATABASE_URL=postgresql://postgres:postgres@localhost:5432/rxdecode_db
+DATABASE_URL=postgresql://postgres:password@localhost:5432/db_name
 JWT_SECRET=replace_with_a_long_random_string
 ```
 
