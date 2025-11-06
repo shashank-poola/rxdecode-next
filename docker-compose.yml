@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: rxdecode-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: rxdecode_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - rxdecode-network
+
+  # Redis (optional, for sessions/caching)
+  redis:
+    image: redis:7-alpine
+    container_name: rxdecode-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - rxdecode-network
+
+  # Frontend (if you want to containerize it)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: rxdecode-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://localhost:5000
+      - VITE_GOOGLE_CLIENT_ID=${VITE_GOOGLE_CLIENT_ID}
+      - VITE_GEMINI_API_KEY=${VITE_GEMINI_API_KEY}
+      - VITE_GOOGLE_VISION_API_KEY=${VITE_GOOGLE_VISION_API_KEY}
+    depends_on:
+      - postgres
+    networks:
+      - rxdecode-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  rxdecode-network:
+    driver: bridge
