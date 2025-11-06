@@ -1,6 +1,6 @@
 # RxDecode
 
-[Frontend](.public/frontendpage.png)
+![Frontend](public/frontendpage.png)
 
 AI-powered helper to generate and understand prescriptions, and search medicines with usage, dosage, side-effects, and warnings.
 
