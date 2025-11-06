@@ -1,95 +1,105 @@
 # RxDecode
 
-**RxDecode** is an AI-powered medical prescription generator built using **Gemini**, designed to simplify and enhance the understanding of prescriptions. The application can generate detailed medicine recommendations based on user input and provides complete information about each medicine, including **usage, dosage, precautions, and warnings**.
+![Frontend](./frontendpage.png)
 
-In addition, RxDecode includes a **search feature** that allows users to look up any medicine and instantly access verified and comprehensive details.
+AI-powered helper to generate and understand prescriptions, and search medicines with usage, dosage, side-effects, and warnings.
 
 ---
 
 ## Features
 
-- **AI Prescription Generator:**  
-  Generates a detailed list of medicines based on the given symptoms or condition using the Gemini model.
-
-- **Medicine Details:**  
-  For every generated or searched medicine, users can view essential details such as:
-  - Usage instructions  
-  - Recommended dosage  
-  - Possible side effects  
-  - Precautions and warnings  
-
-- **Search Functionality:**  
-  Search for any medicine by name to view accurate and structured information about it.
-
-- **User-Friendly Interface:**  
-  A clean and intuitive interface that helps users easily understand and navigate through the app.
-
-- **Educational Purpose:**  
-  Designed to help users understand medical prescriptions better. It is **not a replacement for professional medical advice**.
+- AI prescription generator (Gemini)
+- Medicine search with structured info
+- Clean UI (Tailwind + shadcn/ui)
+- Email/password auth with secure httpOnly cookie session
 
 ---
 
 ## Tech Stack
 
-- **Frontend:** React / Next.js  
-- **Backend:** Node.js / Express (if applicable)  
-- **AI Model:** Gemini (for prescription and medicine information generation)  
-- **Styling:** Tailwind CSS / ShadCN UI  
-- **Deployment:** Vercel / Render / Other supported platforms  
+- Frontend: Vite + React + TypeScript
+- Backend: Express (Node 20+), Bun-compatible
+- Database: PostgreSQL + Prisma
+- Styling: TailwindCSS, shadcn/ui
+- Deploy: Vercel (frontend), Render/Railway (backend), Neon/Supabase (DB)
 
 ---
 
-## How It Works
+## Local Development (Bun)
 
-1. **Input Symptoms or Condition:**  
-   Enter the symptoms or health issue you are facing.
+1) Clone
 
-2. **AI Prescription Generation:**  
-   Gemini processes the input and generates a list of suggested medicines.
+```bash
+git clone https://github.com/shashank-poola/rxdecode-next.git
+cd rxdecode-next
+```
 
-3. **View Details:**  
-   Each medicine includes information such as how to use it, dosage instructions, and precautions.
+2) Environment
 
-4. **Search Option:**  
-   Alternatively, search for a specific medicine to get details directly.
+- Root `.env` (used by Vite and Prisma CLI):
+
+```bash
+VITE_API_URL=http://localhost:5000
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/rxdecode_db
+```
+
+- `server/.env` (backend runtime):
+
+```bash
+PORT=5000
+CLIENT_ORIGIN=http://localhost:5173
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/rxdecode_db
+JWT_SECRET=replace_with_a_long_random_string
+```
+
+3) Database (Docker)
+
+```bash
+docker compose up -d postgres
+```
+
+4) Prisma (run from project root)
+
+```bash
+bunx prisma generate
+bunx prisma migrate deploy
+```
+
+5) Start backend (server/)
+
+```bash
+cd server
+bun install
+bun run dev
+# http://localhost:5000/health
+```
+
+6) Start frontend (root)
+
+```bash
+bun install
+bun run dev
+# http://localhost:5173
+```
 
 ---
 
-## Installation
+## API Endpoints
 
-1. **Clone the Repository**
-   ```bash
-   git clone https://github.com/your-username/rxdecode.git
-   ```
+- `GET /health` → { ok: true }
+- `POST /auth/register` → body: { name, email, password } → sets cookie, returns { user }
+- `POST /auth/login` → body: { email, password } → sets cookie, returns { user }
+- `GET /me` → returns { user } if session cookie is valid
+- `POST /auth/logout` → clears session
 
-2. **Create env file**
-   Create a `.env` file at the project root with the following variables. For Vite, all client-exposed vars must be prefixed with `VITE_`.
+Frontend calls use `credentials: 'include'` so cookies persist.
 
-   ```bash
-   # Database
-   DATABASE_URL="postgresql://USER:PASSWORD@HOST:PORT/DBNAME?schema=public"
+---
 
-   # Google OAuth
-   GOOGLE_CLIENT_ID="your-google-oauth-client-id.apps.googleusercontent.com"
-   GOOGLE_CLIENT_SECRET="your-google-oauth-client-secret"
+## Deploy
 
-   # Frontend (Vite)
-   VITE_GEMINI_API_KEY="your-gemini-api-key"
-   VITE_GOOGLE_VISION_API_KEY="your-google-vision-api-key"
-   ```
+- Frontend (Vercel): set `VITE_API_URL` to your backend URL.
+- Backend (Render/Railway): set `PORT`, `CLIENT_ORIGIN` (your Vercel URL), `DATABASE_URL`, `JWT_SECRET`.
+- Prisma on deploy: run `bunx prisma generate && bunx prisma migrate deploy` before `bun run start`.
 
-3. **Install Dependencies**
-   ```bash
-   npm install
-   ```
-
-4. **Run Prisma (if backend present)**
-   ```bash
-   npx prisma generate
-   npx prisma migrate dev
-   ```
-
-5. **Start Dev Server**
-   ```bash
-   npm run dev
-   ```
+---
